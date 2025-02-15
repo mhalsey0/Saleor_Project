@@ -1,0 +1,10 @@
+name: Staging pipeline for Saleor_Project
+
+on:
+  push:
+    branches: [ Staging ]
+  pull_request:
+    branches: [ Staging ]
+
+jobs:
+  build:
