@@ -76,5 +76,5 @@ jobs:
 
       - name: Push to Dockerhub
         run: |
-          docker image push ${{ secrets.DOCKER_USERNAME }}/saleor_project_api:develop
-          docker image push ${{ secrets.DOCKER_USERNAME }}/saleor_project_dashboard:develop
+          docker image push mhalsey0/saleor_project_api:develop
+          docker image push mhalsey0/saleor_project_dashboard:develop
