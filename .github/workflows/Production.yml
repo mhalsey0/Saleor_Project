@@ -3,8 +3,69 @@ name: Production Pipeline for Saleor_Project
 on:
   push:
     branches: [ Production ]
-  pull_request:
-    branches: [ Production ]
 
 jobs:
+  ensure-staging-success:
+    name: Ensure Staging Pipeline Success
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Verify Staging Workflow Status
+        uses: octokit/request-action@v2.4.0
+        id: staging-status
+        with:
+          route: GET /repos/${{ github.repository }}/actions/workflows/staging.yml/runs?branch=staging&status=success
+
+      - name: Check for Successful Staging Run
+        run: |
+          if [ -z "$(echo ${{ steps.staging-status.outputs.data }} | jq '.workflow_runs[0]')" ]; then
+            echo "No successful staging pipeline found. Exiting..."
+            exit 1
+          fi
+
   build:
+    name: Build Docker Image
+    runs-on: ubuntu-latest
+              
+    steps:
+    - name: Checkout Code
+      uses: actions/checkout@v4
+              
+    - name: Log in to Docker Hub
+      uses: docker/login-action@v2
+      with:
+        username: ${{ secrets.DOCKER_USERNAME }}
+        password: ${{ secrets.DOCKER_PASSWORD }}   
+                       
+    - name: Build API Image
+      run: docker build -t Saleor_Project_API:staging -f ./saleor-api/dockerfile ./saleor-api
+              
+    - name: Build Dashboard Image
+      run: docker build -t Saleor_Project_Dashboard:staging -f ./saleor-dashboard/dockerfile ./saleor-dashboard
+              
+    - name: API Image Trivy Scan
+      uses: aquasecurity/trivy-action@0.28.0
+      with:
+        image-ref: 'Saleor_Project_API:staging'
+        format: 'table'
+        exit-code: '1'
+        ignore-unfixed: true
+        vuln-type: 'os,library'
+        severity: 'CRITICAL,HIGH'
+              
+    - name: Dasbhoard Image Trivy Scan
+      uses: aquasecurity/trivy-action@0.28.0
+      with:
+        image-ref: 'Saleor_Project_Dasbhoard:staging'
+        format: 'table'
+        exit-code: '1'
+        ignore-unfixed: true
+        vuln-type: 'os,library'
+        severity: 'CRITICAL,HIGH'
+                        
+    - name: Push to Dockerhub
+      run: |
+        docker image push Saleor_Project_API:staging
+        docker image push Saleor_Project_Dashboard:staging
+        
+

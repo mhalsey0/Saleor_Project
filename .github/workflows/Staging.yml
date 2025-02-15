@@ -7,4 +7,82 @@ on:
     branches: [ Staging ]
 
 jobs:
+  compose:
+    name: Compose Validation
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v4
+
+      - name: Docker Compose
+        run: docker compose up -d
+
+      - name: Health Checks
+        run: |
+          services=(api dashboard db redis jaeger mailpit)
+          for service in "${services[@]}"; do
+            echo "Checking health of $service..."
+            for i in {1..10}; do
+              STATUS=$(docker inspect --format='{{json .State.Health.Status}}' $service | tr -d '"')
+              echo "$service health status: $STATUS"
+              if [ "$STATUS" == "healthy" ]; then
+                echo "$service is healthy!"
+                break
+              elif [ "$STATUS" == "unhealthy" ]; then
+                echo "$service failed health checks."
+                exit 1
+              fi
+              sleep 5
+            done
+          done
+
+      - name: Stop Docker Compose
+        run: docker compose down
+
   build:
+    name: Build Docker Image
+    runs-on: ubuntu-latest
+      
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v4
+      
+      - name: Log in to Docker Hub
+        uses: docker/login-action@v2
+        with:
+          username: ${{ secrets.DOCKER_USERNAME }}
+          password: ${{ secrets.DOCKER_PASSWORD }}   
+               
+      - name: Build API Image
+        run: docker build -t Saleor_Project_API:staging -f ./saleor-api/dockerfile ./saleor-api
+      
+      - name: Build Dashboard Image
+        run: docker build -t Saleor_Project_Dashboard:staging -f ./saleor-dashboard/dockerfile ./saleor-dashboard
+      
+      - name: API Image Trivy Scan
+        uses: aquasecurity/trivy-action@0.28.0
+        with:
+          image-ref: 'Saleor_Project_API:staging'
+          format: 'table'
+          exit-code: '1'
+          ignore-unfixed: true
+          vuln-type: 'os,library'
+          severity: 'CRITICAL,HIGH'
+      
+      - name: Dasbhoard Image Trivy Scan
+        uses: aquasecurity/trivy-action@0.28.0
+        with:
+          image-ref: 'Saleor_Project_Dasbhoard:staging'
+          format: 'table'
+          exit-code: '1'
+          ignore-unfixed: true
+          vuln-type: 'os,library'
+          severity: 'CRITICAL,HIGH'
+                
+      - name: Push to Dockerhub
+        run: |
+          docker image push Saleor_Project_API:staging
+          docker image push Saleor_Project_Dashboard:staging
+
+

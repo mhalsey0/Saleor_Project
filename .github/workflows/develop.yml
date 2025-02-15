@@ -7,5 +7,74 @@ on:
     branches: [ Develop ]
 
 jobs:
+  lint:
+    name: Static Code Analysis
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v4
+
+      - name: Setup Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.9"
+
+      - name: Install pip
+        run: python -m pip install --upgrade pip
+      
+      - name: Set Up Flake8
+        run: pip install flake8
+
+      - name: Run Flake8
+        run: flake8 ./app.py
+        continue-on-error: true
+
+      - name: Dependencies and Vulnerabilities Check
+        uses: pypa/gh-action-pip-audit@v1.1.0
+        continue-on-error: true
+
   build:
-    
+    name: Build Docker Image
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v4
+
+      - name: Log in to Docker Hub
+        uses: docker/login-action@v2
+        with:
+         username: ${{ secrets.DOCKER_USERNAME }}
+         password: ${{ secrets.DOCKER_PASSWORD }}   
+         
+      - name: Build API Image
+        run: docker build -t Saleor_Project_API:develop -f ./saleor-api/dockerfile ./saleor-api
+
+      - name: Build Dashboard Image
+        run: docker build -t Saleor_Project_Dashboard:develop -f ./saleor-dashboard/dockerfile ./saleor-dashboard
+
+      - name: API Image Trivy Scan
+        uses: aquasecurity/trivy-action@0.28.0
+        with:
+          image-ref: 'Saleor_Project_API:develop'
+          format: 'table'
+          exit-code: '1'
+          ignore-unfixed: true
+          vuln-type: 'os,library'
+          severity: 'CRITICAL,HIGH'
+
+      - name: Dasbhoard Image Trivy Scan
+        uses: aquasecurity/trivy-action@0.28.0
+        with:
+          image-ref: 'Saleor_Project_Dasbhoard:develop'
+          format: 'table'
+          exit-code: '1'
+          ignore-unfixed: true
+          vuln-type: 'os,library'
+          severity: 'CRITICAL,HIGH'
+          
+      - name: Push to Dockerhub
+        run: |
+          docker image push Saleor_Project_API:develop
+          docker image push Saleor_Project_Dashboard:develop
