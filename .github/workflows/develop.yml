@@ -52,7 +52,7 @@ jobs:
         run: docker build -t saleor_project_api:develop ./saleor-api
 
       - name: Build Dashboard Image
-        run: docker build -t Saleor_Project_Dashboard:develop ./saleor-dashboard
+        run: docker build -t saleor_project_dashboard:develop ./saleor-dashboard
 
       - name: API Image Trivy Scan
         uses: aquasecurity/trivy-action@0.28.0
@@ -67,7 +67,7 @@ jobs:
       - name: Dasbhoard Image Trivy Scan
         uses: aquasecurity/trivy-action@0.28.0
         with:
-          image-ref: 'Saleor_Project_Dasbhoard:develop'
+          image-ref: 'saleor_project_dashboard:develop'
           format: 'table'
           exit-code: '1'
           ignore-unfixed: true
@@ -77,4 +77,4 @@ jobs:
       - name: Push to Dockerhub
         run: |
           docker image push saleor_project_api:develop
-          docker image push Saleor_Project_Dashboard:develop
+          docker image push saleor_project_dashboard:develop
