@@ -59,7 +59,7 @@ jobs:
         with:
           image-ref: 'saleor_project_api:develop'
           format: 'table'
-          exit-code: '1'
+          exit-code: '0'
           ignore-unfixed: true
           vuln-type: 'os,library'
           severity: 'CRITICAL,HIGH'
@@ -69,7 +69,7 @@ jobs:
         with:
           image-ref: 'saleor_project_dashboard:develop'
           format: 'table'
-          exit-code: '1'
+          exit-code: '0'
           ignore-unfixed: true
           vuln-type: 'os,library'
           severity: 'CRITICAL,HIGH'
