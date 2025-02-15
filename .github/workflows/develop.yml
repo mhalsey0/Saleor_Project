@@ -27,7 +27,7 @@ jobs:
         run: pip install flake8
 
       - name: Run Flake8
-        run: flake8 ./app.py
+        run: flake8 .
         continue-on-error: true
 
       - name: Dependencies and Vulnerabilities Check
