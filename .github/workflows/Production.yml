@@ -38,10 +38,10 @@ jobs:
         password: ${{ secrets.DOCKER_PASSWORD }}   
                        
     - name: Build API Image
-      run: docker build -t saleor_project_api:staging -f ./saleor-api/dockerfile ./saleor-api
+      run: docker build -t saleor_project_api:staging ./saleor-api
               
     - name: Build Dashboard Image
-      run: docker build -t Saleor_Project_Dashboard:staging -f ./saleor-dashboard/dockerfile ./saleor-dashboard
+      run: docker build -t Saleor_Project_Dashboard:staging ./saleor-dashboard
               
     - name: API Image Trivy Scan
       uses: aquasecurity/trivy-action@0.28.0
