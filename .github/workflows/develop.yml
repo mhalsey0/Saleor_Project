@@ -1,0 +1,11 @@
+name: Development Pipeline for Saelor_Project
+
+on:
+  push:
+    branches: [ Develop ]
+  pull_request:
+    branches: [ Develop ]
+
+jobs:
+  build:
+    
