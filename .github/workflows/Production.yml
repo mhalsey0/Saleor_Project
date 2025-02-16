@@ -16,7 +16,7 @@ jobs:
         uses: octokit/request-action@v2.x
         id: staging-status
         with:
-          route: GET /repos/${{ github.repository }}/actions/workflows/staging.yml/runs?branch=staging&status=success
+          route: GET /repos/${{ github.repository }}/actions/workflows/Staging.yml/runs?branch=Staging&status=success
 
       - name: Check for Successful Staging Run
         run: |
