@@ -21,8 +21,7 @@ jobs:
 
       - name: Health Checks
         run: |
-          sleep 30
-          services=(saleor_project-api-1 saleor_project-dashboard-1 saleor_project-db-1 saleor_project-redis-1 saleor_project-jaeger-1 saleor_project-mailpit-1)
+          services=(api dashboard db redis jaeger mailpit)
           for service in "${services[@]}"; do
             echo "Checking health of $service..."
             for i in {1..10}; do
@@ -32,8 +31,8 @@ jobs:
                 break
               fi
               echo "$service health status: $STATUS"
-              if [ "$STATUS" == "healthy" ] || ["$STATUS" == "starting" ]; then
-                echo "$service is healthy!"
+              if [[ "$STATUS" == "healthy" || "$STATUS" == "starting" ]]; then
+                echo "$service is healthy or starting!"
                 break
               elif [ "$STATUS" == "unhealthy" ]; then
                 echo "$service failed health checks."
@@ -42,6 +41,7 @@ jobs:
               sleep 5
             done
           done
+        
 
       - name: Stop Docker Compose
         run: docker compose down
