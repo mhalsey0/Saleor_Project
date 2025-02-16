@@ -18,11 +18,10 @@ jobs:
       - name: Docker Compose
         run: |
           docker compose up -d
-          sleep 30
-
 
       - name: Health Checks
         run: |
+          sleep 30
           services=(saleor_project-api-1 saleor_project-dashboard-1 saleor_project-db-1 saleor_project-redis-1 saleor_project-jaeger-1 saleor_project-mailpit-1)
           for service in "${services[@]}"; do
             echo "Checking health of $service..."
