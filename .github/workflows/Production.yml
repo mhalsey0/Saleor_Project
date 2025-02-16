@@ -18,12 +18,19 @@ jobs:
         with:
           route: GET /repos/${{ github.repository }}/actions/workflows/Staging.yml/runs?branch=Staging&status=success
 
+      - name: Debug Staging Workflow Output
+        run: |
+          echo "Staging workflow output:"
+          echo '${{ steps.staging-status.outputs.data }}'
+
       - name: Check for Successful Staging Run
         run: |
-          if [ -z "$(echo ${{ steps.staging-status.outputs.data }} | jq '.workflow_runs[0]')" ]; then
+          staging_data='${{ steps.staging-status.outputs.data }}'
+          if [ -z "$(echo $staging_data | jq '.workflow_runs[0]')" ]; then
             echo "No successful staging pipeline found. Exiting..."
             exit 1
           fi
+
 
   build:
     name: Build Docker Image
