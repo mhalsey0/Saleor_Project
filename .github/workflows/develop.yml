@@ -43,15 +43,15 @@ jobs:
         uses: actions/checkout@v4
          
       - name: Build API Image
-        run: docker build -t saleor_project_api:develop ./saleor-api
+        run: docker build -t saleor_project-api:develop ./saleor-api
 
       - name: Build Dashboard Image
-        run: docker build -t saleor_project_dashboard:develop ./saleor-dashboard
+        run: docker build -t saleor_project-dashboard:develop ./saleor-dashboard
 
       - name: API Image Trivy Scan
         uses: aquasecurity/trivy-action@0.28.0
         with:
-          image-ref: 'saleor_project_api:develop'
+          image-ref: 'saleor_project-api:develop'
           format: 'table'
           exit-code: '0'
           ignore-unfixed: true
@@ -61,7 +61,7 @@ jobs:
       - name: Dasbhoard Image Trivy Scan
         uses: aquasecurity/trivy-action@0.28.0
         with:
-          image-ref: 'saleor_project_dashboard:develop'
+          image-ref: 'saleor_project-dashboard:develop'
           format: 'table'
           exit-code: '0'
           ignore-unfixed: true
