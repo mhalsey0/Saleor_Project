@@ -23,7 +23,7 @@ jobs:
 
       - name: Health Checks
         run: |
-          services=(api dashboard db redis jaeger mailpit)
+          services=(saleor_project-api-1 saleor_project-dashboard-1 saleor_project-db-1 saleor_project-redis-1 saleor_project-jaeger-1 saleor_project-mailpit-1)
           for service in "${services[@]}"; do
             echo "Checking health of $service..."
             for i in {1..10}; do
