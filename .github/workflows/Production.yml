@@ -38,15 +38,15 @@ jobs:
         password: ${{ secrets.DOCKER_PASSWORD }}   
                        
     - name: Build API Image
-      run: docker build -t saleor_project-api:staging ./saleor-api
+      run: docker build -t ${{ secrets.DOCKER_USERNAME }}/saleor_project-api:staging ./saleor-api
               
     - name: Build Dashboard Image
-      run: docker build -t saleor_project-dashboard:staging ./saleor-dashboard
+      run: docker build -t ${{ secrets.DOCKER_USERNAME }}/saleor_project-dashboard:staging ./saleor-dashboard
               
     - name: API Image Trivy Scan
       uses: aquasecurity/trivy-action@0.28.0
       with:
-        image-ref: 'saleor_project-api:staging'
+        image-ref: '${{ secrets.DOCKER_USERNAME }}/saleor_project-api:staging'
         format: 'table'
         exit-code: '0'
         ignore-unfixed: true
@@ -56,7 +56,7 @@ jobs:
     - name: Dasbhoard Image Trivy Scan
       uses: aquasecurity/trivy-action@0.28.0
       with:
-        image-ref: 'saleor_project-dashboard:staging'
+        image-ref: '${{ secrets.DOCKER_USERNAME }}/saleor_project-dashboard:staging'
         format: 'table'
         exit-code: '0'
         ignore-unfixed: true
