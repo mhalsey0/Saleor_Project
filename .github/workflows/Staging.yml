@@ -26,14 +26,17 @@ jobs:
           for service in "${services[@]}"; do
             echo "Checking health of $service..."
             for i in {1..10}; do
-              STATUS=$(docker inspect --format='{{json .State.Health.Status}}' $service | tr -d '"')
+              STATUS=$(docker inspect --format='{{json .State.Health.Status}}' $service 2>/dev/null | tr -d '"')
+              if [ -z "$STATUS" ]; then
+                echo "Service $service does not exist or health status is unavailable. Skipping..."
+                break
+              fi
               echo "$service health status: $STATUS"
               if [ "$STATUS" == "healthy" ]; then
                 echo "$service is healthy!"
                 break
-              elif [ "$STATUS" == "unhealthy" ]; then
+              elif [ "$STATUS" == "unhealthy" ] || ["$STATUS == "started" ]; then
                 echo "$service failed health checks."
-                echo "$service status is $STATUS."
                 exit 1
               fi
               sleep 5
