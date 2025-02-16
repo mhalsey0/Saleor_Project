@@ -11,6 +11,8 @@ jobs:
 
     steps:
       - name: Verify Staging Workflow Status
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         uses: octokit/request-action@v2.x
         id: staging-status
         with:
