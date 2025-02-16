@@ -11,7 +11,7 @@ jobs:
 
     steps:
       - name: Verify Staging Workflow Status
-        uses: octokit/request-action@v2.1.0
+        uses: octokit/request-action@v2.x
         id: staging-status
         with:
           route: GET /repos/${{ github.repository }}/actions/workflows/staging.yml/runs?branch=staging&status=success
