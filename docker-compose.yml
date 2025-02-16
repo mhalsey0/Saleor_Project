@@ -32,14 +32,14 @@ services:
       context: ./saleor-dashboard
       dockerfile: Dockerfile
     ports:
-      - "9000:9000"
+      - "9000:80"
     depends_on:
       - api
     restart: unless-stopped
     networks:
       - saleor-backend-tier
     healthcheck:
-      test: ["CMD", "curl", "-f", "http://localhost:9000"]
+      test: ["CMD", "curl", "-f", "http://localhost:80"]
       interval: 30s
       timeout: 10s
       retries: 3
