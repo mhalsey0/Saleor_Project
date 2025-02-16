@@ -33,6 +33,7 @@ jobs:
                 break
               elif [ "$STATUS" == "unhealthy" ]; then
                 echo "$service failed health checks."
+                echo "$service status is $STATUS."
                 exit 1
               fi
               sleep 5
